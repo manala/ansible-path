@@ -1,0 +1,22 @@
+name: manala-ansible-path
+
+services:
+
+    ##########
+    # System #
+    ##########
+
+    system:
+        hostname: manala-ansible-path
+        build:
+            context: ..
+            dockerfile: docker/Dockerfile
+        image: manala-ansible-path:20240910081954
+        volumes:
+            - ../..:${MANALA_DIR}
+        environment:
+            MANALA_DIR: ${MANALA_DIR}
+            MANALA_CACHE_DIR: ${MANALA_CACHE_DIR}
+        working_dir: ${MANALA_DIR}
+        # Use default docker bridge network
+        network_mode: bridge
