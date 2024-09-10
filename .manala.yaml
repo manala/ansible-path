@@ -18,42 +18,16 @@ project:
 ##########
 
 system:
-    # apt:
-    #     packages:
-    #         - jq
     git:
         config: |
             # Silence false positive dubious ownership errors
-            #[safe]
-            #directory = *
-    ssh:
-        config: |
-            # Allow host autocompletion by disabling hashing in known_hosts file
-            #HashKnownHosts no
-            # Automatically accept host keys
-            #StrictHostKeyChecking no
-            # Reduce log level
-            #LogLevel ERROR
-
-            # Example
-            Host *.example.com
-                User foo
-                ForwardAgent yes
+            [safe]
+            directory = *
     ansible:
         version: 2.16.9
         config: |
             [defaults]
-            #force_color = True
-            #retry_files_enabled = False
-            [ssh_connection]
-            # Improve performance
-            #pipelining = True
-            # Avoid issues on ssh too long socket path and/or invalid permissions
-            #control_path_dir = /tmp/ansible/cp
-        # dependencies:
-        #     # Collection community.docker
-        #     - docker==6.0.1
-        #     # Collection community.hashi_vault
-        #     - hvac==1.1.0
+            force_color = True
+            retry_files_enabled = False
     ansible-lint:
         version: 24.7.0

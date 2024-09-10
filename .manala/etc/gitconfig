@@ -2,5 +2,5 @@
 # Don't edit this file directly. Instead, set config in project .manala.yaml, and run `manala up`.
 
 # Silence false positive dubious ownership errors
-#[safe]
-#directory = *
+[safe]
+directory = *
