@@ -1,1 +1,1 @@
-# ansible-path
+# Manala Collection - Path
