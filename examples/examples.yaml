@@ -1,0 +1,41 @@
+---
+
+# This playbook example contains simple use cases that illustrate the basics functionality of path module.
+
+- name: Examples
+  gather_facts: false
+  hosts: localhost
+  vars:
+    path: /tmp/path
+  tasks:
+    
+    - name: Create a directory by specified path and present state 
+      manala.path.path:
+        # specified the target
+        path: "{{ [path, item.path] | ansible.builtin.path_join }}"
+        state: present 
+      loop:
+        - path: rep # directory name
+
+    - name: Check if the targeted resource (file, directory) is absent and if not, delete it
+      manala.path.path:
+        path: "{{ [path, item.path] | ansible.builtin.path_join }}"
+        state: absent
+      loop:
+        - path: rep
+
+    - name: Create the file "example" which contains "Hello World"
+      manala.path.path:
+        path: "{{ [path, item.path] | ansible.builtin.path_join }}"
+        content: "{{ item.content }}"
+      loop:
+        - path: example
+          content: Hello World 
+
+    - name: Create the file "tmp_example" result of the template "template.j2"
+      manala.path.path:
+        path: "{{ [path, item.path] | ansible.builtin.path_join }}"
+        template: "{{ item.template }}"
+      loop:
+        - path: tmp_example
+          template: template.j2
