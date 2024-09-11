@@ -12,7 +12,7 @@ short_description: Handle path
 description:
   - Handle path
 author:
-  - Manala (contact@manala.io)
+  - Manala (@manala)
 '''
 
 EXAMPLES = '''

@@ -1,0 +1,148 @@
+---
+
+###########
+# Present #
+###########
+
+- name: Present
+  tags: present
+  vars:
+    path: /tmp/integration/path/present
+  block:
+    - name: Present | Setup path
+      ansible.builtin.file:  # noqa: risky-file-permissions
+        path: "{{ path }}"
+        state: "{{ item }}"
+      loop: [absent, directory]
+    - name: Present | Converge
+      manala.path.path:
+        path: "{{ [path, item.path] | ansible.builtin.path_join }}"
+        state: present
+      loop:
+        - path: foo
+    - name: Present | Stats
+      ansible.builtin.stat:
+        path: "{{ [path, item.path] | ansible.builtin.path_join }}"
+      register: stats
+      loop:
+        - path: foo
+    - name: Present | Verify
+      ansible.builtin.assert:
+        that:
+          - stats.results[0].stat.exists is true
+          - stats.results[0].stat.isdir is true
+
+##########
+# Absent #
+##########
+
+- name: Absent
+  tags: absent
+  vars:
+    path: /tmp/integration/path/absent
+  block:
+    - name: Absent | Setup path
+      ansible.builtin.file:  # noqa: risky-file-permissions
+        path: "{{ path }}"
+        state: "{{ item }}"
+      loop: [absent, directory]
+    - name: Absent | Prepare files
+      ansible.builtin.file:  # noqa: risky-file-permissions
+        path: "{{ [path, item.path] | ansible.builtin.path_join }}"
+        state: touch
+      loop:
+        - path: foo
+    - name: Absent | Converge
+      manala.path.path:
+        path: "{{ [path, item.path] | ansible.builtin.path_join }}"
+        state: absent
+      loop:
+        - path: foo
+    - name: Absent | Stats
+      ansible.builtin.stat:
+        path: "{{ [path, item.path] | ansible.builtin.path_join }}"
+      register: stats
+      loop:
+        - path: foo
+    - name: Absent | Verify
+      ansible.builtin.assert:
+        that:
+          - stats.results[0].stat.exists is false
+
+###########
+# Content #
+###########
+
+- name: Content
+  tags: content
+  vars:
+    path: /tmp/integration/path/content
+  block:
+    - name: Content | Setup path
+      ansible.builtin.file:  # noqa: risky-file-permissions
+        path: "{{ path }}"
+        state: "{{ item }}"
+      loop: [absent, directory]
+    - name: Content | Converge
+      manala.path.path:
+        path: "{{ [path, item.path] | ansible.builtin.path_join }}"
+        content: "{{ item.content }}"
+      loop:
+        - path: foo
+          content: foo
+    - name: Content | Stats
+      ansible.builtin.stat:
+        path: "{{ [path, item.path] | ansible.builtin.path_join }}"
+      register: stats
+      loop:
+        - path: foo
+    - name: Content | Contents
+      ansible.builtin.slurp:
+        src: "{{ [path, item.path] | ansible.builtin.path_join }}"
+      register: contents
+      loop:
+        - path: foo
+    - name: Content | Verify
+      ansible.builtin.assert:
+        that:
+          - stats.results[0].stat.exists is true
+          - contents.results[0].content | b64decode == 'foo'
+
+############
+# Template #
+############
+
+- name: Template
+  tags: template
+  vars:
+    path: /tmp/integration/path/template
+  block:
+    - name: Template | Setup path
+      ansible.builtin.file:  # noqa: risky-file-permissions
+        path: "{{ path }}"
+        state: "{{ item }}"
+      loop: [absent, directory]
+    - name: Template | Converge
+      manala.path.path:
+        path: "{{ [path, item.path] | ansible.builtin.path_join }}"
+        template: "{{ item.template }}"
+      loop:
+        - path: foo
+          template: foo.j2
+    - name: Template | Stats
+      ansible.builtin.stat:
+        path: "{{ [path, item.path] | ansible.builtin.path_join }}"
+      register: stats
+      loop:
+        - path: foo
+    - name: Template | Contents
+      ansible.builtin.slurp:
+        src: "{{ [path, item.path] | ansible.builtin.path_join }}"
+      register: contents
+      loop:
+        - path: foo
+    - name: Template | Verify
+      ansible.builtin.assert:
+        that:
+          - stats.results[0].stat.exists is true
+          - contents.results[0].content | b64decode == 'foo'
