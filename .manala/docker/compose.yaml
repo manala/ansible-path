@@ -11,7 +11,7 @@ services:
         build:
             context: ..
             dockerfile: docker/Dockerfile
-        image: manala-ansible-path:20240910083703
+        image: manala-ansible-path:20240910140830
         volumes:
             - ../..:${MANALA_DIR}
         environment:

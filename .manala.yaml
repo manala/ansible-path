@@ -18,6 +18,7 @@ project:
 ##########
 
 system:
+    dir: /usr/share/ansible/collections/ansible_collections/manala/path
     git:
         config: |
             # Silence false positive dubious ownership errors

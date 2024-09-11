@@ -21,8 +21,8 @@ include $(MANALA_DIR)/.manala/docker/docker.mk
 ##########
 
 MANALA_DOCKER_COMPOSE_ENV += \
-	MANALA_DIR=$(realpath $(MANALA_DIR)) \
-	MANALA_CACHE_DIR=$(realpath $(shell dir=$(MANALA_DIR)/$(MANALA_CACHE_DIR) ; mkdir -p $${dir} ; echo $${dir}))
+	MANALA_DIR=/usr/share/ansible/collections/ansible_collections/manala/path \
+	MANALA_CACHE_DIR=/usr/share/ansible/collections/ansible_collections/manala/path/$(shell dir=$(MANALA_DIR)/$(MANALA_CACHE_DIR) ; mkdir -p $${dir} ; echo $(MANALA_CACHE_DIR))
 
 # Command
 MANALA_DOCKER_COMMAND = run --rm
