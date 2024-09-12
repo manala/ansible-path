@@ -1,6 +1,6 @@
 ---
 
-# This playbook example contains simple use cases that illustrate the basics functionality of path module.
+# This playbook example contains simple use cases that illustrate the basics functionality of path module.
 
 - name: Examples
   gather_facts: false
@@ -8,12 +8,12 @@
   vars:
     path: /tmp/path
   tasks:
-    
-    - name: Create a directory by specified path and present state 
+
+    - name: Create a directory by specified path and present state
       manala.path.path:
         # specified the target
         path: "{{ [path, item.path] | ansible.builtin.path_join }}"
-        state: present 
+        state: present
       loop:
         - path: rep # directory name
 
@@ -30,7 +30,8 @@
         content: "{{ item.content }}"
       loop:
         - path: example
-          content: Hello World 
+          content: |
+            Hello World
 
     - name: Create the file "tmp_example" result of the template "template.j2"
       manala.path.path:

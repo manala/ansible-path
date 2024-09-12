@@ -7,11 +7,11 @@ include .manala/Makefile
 ########
 
 ## Lint - Lint collection [VERBOSE]
+lint: SHELL := $(MANALA_DOCKER_SHELL)
 lint:
-	$(call manala_docker_shell, ansible-lint \
+	ansible-lint \
 		$(if $(VERBOSE), -v) \
-		--force-color \
-	)
+		--force-color
 .PHONY: lint
 
 ########
@@ -23,51 +23,51 @@ test: test.sanity test.units test.integration
 .PHONY: test
 
 ## Test - Run sanity tests [VERBOSE]
+test.sanity: SHELL := $(MANALA_DOCKER_SHELL)
 test.sanity:
-	$(call manala_docker_shell, ansible-test sanity \
+	ansible-test sanity \
 		--requirements \
 		--venv \
 		--python 3.11 \
 		$(if $(VERBOSE), --verbose) \
 		--color yes \
 		--exclude .github/ \
-		--exclude .manala/ \
-	)
+		--exclude .manala/
 .PHONY: test.sanity
 
 ## Test - Run units tests [VERBOSE|COVERAGE]
+test.units: SHELL := $(MANALA_DOCKER_SHELL)
 test.units:
-	$(call manala_docker_shell, ansible-test units \
+	ansible-test units \
 		--requirements \
 		--venv \
 		--python 3.11 \
 		$(if $(VERBOSE), --verbose) \
 		$(if $(COVERAGE), --coverage) \
-		--color yes \
-	)
+		--color yes
 .PHONY: test.units
 
 ## Test - Run integration tests [VERBOSE|COVERAGE]
+test.integration: SHELL := $(MANALA_DOCKER_SHELL)
 test.integration:
-	$(call manala_docker_shell, ansible-test integration \
+	ansible-test integration \
 		--requirements \
 		--venv \
 		--python 3.11 \
 		$(if $(VERBOSE), --verbose) \
 		$(if $(COVERAGE), --coverage) \
-		--color yes \
-	)
+		--color yes
 .PHONY: test.integration
 
 ## Test - Run coverage [VERBOSE]
+test.coverage: SHELL := $(MANALA_DOCKER_SHELL)
 test.coverage:
-	$(call manala_docker_shell, ansible-test coverage xml \
+	ansible-test coverage xml \
 		--requirements \
 		--venv \
 		--python 3.11 \
 		--group-by command \
 		--group-by version \
 		$(if $(VERBOSE), --verbose) \
-		--color yes \
-	)
+		--color yes
 .PHONY: test.coverage
