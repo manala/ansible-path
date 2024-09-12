@@ -1,0 +1,86 @@
+name: Collection
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  collection:
+    name: Collection
+    runs-on: ubuntu-24.04
+    if: github.event.head_commit.message == 'Release'
+    steps:
+
+      - name: Notify Slack of starting
+        uses: act10ns/slack@v2
+        with:
+          status: starting
+          channel: '#collection_release'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create ansible galaxy token
+        run: |
+          cat << EOF > ./bla.json
+          ${{ secrets.YOUR_SECRET }}
+          EOF
+
+      - name: Env
+        run: |
+          cp .env .env.local
+
+      - name: Set up system
+        uses: ./.manala/github/system/setup
+
+      - name: Retrieve version from galaxy.yml
+        id: version
+        uses: CumulusDS/get-yaml-paths-action@v1.0.1
+        with:
+          file: ./galaxy.yml
+          version: version
+
+      - name: Build Collection
+        run: |
+          make collection.build
+
+      - name: Create artifact from collection build
+        uses: actions/upload-artifact@v4
+        with:
+          path: ./manala-path-${{ steps.version.outputs.version }}.tar.gz
+          name: manala-path-${{ steps.version.outputs.version }}
+          retention-days: 1
+
+      - name: Publish Collection
+        run: |
+          make collection.publish
+
+      - name: Get Changelog Entry
+        id: changelog
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          path: ./CHANGELOG.md
+          version: ${{ steps.version.outputs.version }}
+
+      - name: Create Github Release
+        uses: ncipollo/release-action@v1
+        with:
+          name: manala-path ${{ steps.version.outputs.version }}
+          tag: ${{ steps.version.outputs.version }}
+          body: ${{ steps.changelog.outputs.changes }}
+          artifacts: ./manala-path-${{ steps.version.outputs.version }}.tar.gz
+          token: ${{ secrets.GITHUB_TOKEN }}
+          skipIfReleaseExists: true
+
+      - name: Notify Slack of job status
+        uses: act10ns/slack@v2
+        with:
+          status: ${{ job.status }}
+          steps: ${{ toJson(steps) }}
+          channel: '#collection_release'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()

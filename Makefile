@@ -71,3 +71,22 @@ test.coverage:
 		$(if $(VERBOSE), --verbose) \
 		--color yes
 .PHONY: test.coverage
+
+##############
+# Collection #
+##############
+
+MANALA_COLLECTION = manala-path-*.tar.gz
+
+## Collection - Build ansible collection artifact
+collection.build: SHELL := $(MANALA_DOCKER_SHELL)
+collection.build:
+	rm -rf $(MANALA_COLLECTION)
+	ansible-galaxy collection build --force --verbose
+.PHONY: collection.build
+
+## Collection - Publish collection
+collection.publish: SHELL := $(MANALA_DOCKER_SHELL)
+collection.publish:
+	ansible-galaxy collection publish $(MANALA_COLLECTION)
+.PHONY: collection.publish

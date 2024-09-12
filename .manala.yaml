@@ -19,6 +19,9 @@ project:
 
 system:
     dir: /usr/share/ansible/collections/ansible_collections/manala/path
+    env_file:
+        - .env
+        - .env.local
     git:
         config: |
             # Silence false positive dubious ownership errors

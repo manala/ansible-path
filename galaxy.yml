@@ -64,11 +64,16 @@ build_ignore:
   - .github
   - .gitignore
   - .DS_Store
+  - .vscode
+  - .env
+  - .env.local
   - .ansible-lint
   - .manala.yaml
   - .manala
   - examples
+  - galaxy_token
   - Makefile
+  - manala-path-*
   - tests
 
 # A dict controlling use of manifest directives used in building the collection artifact. The key 'directives' is a
