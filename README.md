@@ -56,7 +56,7 @@ See [Ansible Using collections](https://docs.ansible.com/ansible/devel/user_guid
 
 ## Use this collection
 
-See the [examples playbook](./examples/examples.yaml).
+See the [examples](examples).
 
 ## Release notes
 

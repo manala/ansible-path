@@ -18,7 +18,6 @@ readme: README.md
 authors:
   - Manala <contact@manala.io>
 
-
 ### OPTIONAL but strongly recommended
 # A short summary description of the collection
 description: path handling
@@ -70,10 +69,3 @@ build_ignore:
   - Makefile
   - manala-path-*
   - tests
-
-# A dict controlling use of manifest directives used in building the collection artifact. The key 'directives' is a
-# list of MANIFEST.in style
-# L(directives,https://packaging.python.org/en/latest/guides/using-manifest-in/#manifest-in-commands). The key
-# 'omit_default_directives' is a boolean that controls whether the default directives are used. Mutually exclusive
-# with 'build_ignore'
-# manifest: null
