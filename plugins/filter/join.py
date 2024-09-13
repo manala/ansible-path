@@ -17,7 +17,7 @@ def join(elements, *paths):
 
 
 class FilterModule(object):
-    ''' Manala join jinja2 filters '''
+    ''' Manala path join jinja2 filters '''
 
     def filters(self):
         filters = {

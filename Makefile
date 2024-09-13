@@ -18,7 +18,7 @@ lint:
 # Test #
 ########
 
-## Test - Run all tests (but coverage)
+## Test - Run all tests (but doc and coverage)
 test: test.sanity test.units test.integration
 .PHONY: test
 
@@ -58,6 +58,19 @@ test.integration:
 		$(if $(COVERAGE), --coverage) \
 		--color yes
 .PHONY: test.integration
+
+## Test - Run documentation tests [VERBOSE]
+test.doc: SHELL := $(MANALA_DOCKER_SHELL)
+test.doc:
+	$(foreach type,module filter, \
+		$(foreach plugin,$(shell ansible-doc --list manala.path --type $(type) | cut -d " " -f 1), \
+			ansible-doc \
+				$(if $(VERBOSE), --verbose) \
+				--type $(type) \
+				$(plugin) && \
+		) \
+	) true
+.PHONY: test.doc
 
 ## Test - Run coverage [VERBOSE]
 test.coverage: SHELL := $(MANALA_DOCKER_SHELL)
