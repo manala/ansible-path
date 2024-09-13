@@ -36,7 +36,8 @@ jobs:
         id: metadata
         uses: CumulusDS/get-yaml-paths-action@v1.0.2
         with:
-          file: ./galaxy.yml
+          file: galaxy.yml
+          version: version
 
       - name: Build
         id: build

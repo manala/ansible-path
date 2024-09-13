@@ -1,0 +1,19 @@
+DOCUMENTATION:
+  name: join
+  author:
+    - Manala (@manala)
+  short_description: Join path elements list to one or more path components
+  description:
+    - Returns a path elements list obtained by joining each element's path to one or more path components.
+  positional: _input,_paths
+  options:
+    _input:
+      description: A list of elements.
+      type: list
+      elements: object
+      required: true
+    _paths:
+      description: A path, or a list of paths.
+      type: list
+      elements: str
+      required: true

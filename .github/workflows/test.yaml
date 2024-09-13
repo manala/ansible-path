@@ -27,3 +27,7 @@ jobs:
       - name: Integration
         run: |
           make test.integration VERBOSE=1
+
+      - name: Doc
+        run: |
+          make test.doc VERBOSE=1
