@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2024-09-13
+
+### Added
+
+- Ansible filter "join"
+
 ## [1.0.0] - 2024-09-12
 
 ### Added
