@@ -34,7 +34,7 @@ jobs:
 
       - name: Get metadata from galaxy.yml
         id: metadata
-        uses: CumulusDS/get-yaml-paths-action@v1.0.1
+        uses: CumulusDS/get-yaml-paths-action@v1.0.2
         with:
           file: ./galaxy.yml
 
