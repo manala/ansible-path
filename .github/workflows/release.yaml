@@ -1,4 +1,4 @@
-name: Collection
+name: Release
 
 on:
   push:
@@ -6,13 +6,13 @@ on:
       - main
 
 jobs:
-  collection:
-    name: Collection
+  release:
+    name: Release
     runs-on: ubuntu-24.04
     if: github.event.head_commit.message == 'Release'
     steps:
 
-      - name: Notify Slack of starting
+      - name: Notify Slack - Starting
         uses: act10ns/slack@v2
         with:
           status: starting
@@ -23,59 +23,57 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create ansible galaxy token
+      - name: Set ansible galaxy token
         run: |
           cat << EOF > ./galaxy_token
           token: ${{ secrets.ANSIBLE_GALAXY_TOKEN }}
           EOF
 
-      - name: Env
-        run: |
-          cp .env .env.local
-
       - name: Set up system
         uses: ./.manala/github/system/setup
 
-      - name: Retrieve version from galaxy.yml
-        id: version
+      - name: Get metadata from galaxy.yml
+        id: metadata
         uses: CumulusDS/get-yaml-paths-action@v1.0.1
         with:
           file: ./galaxy.yml
-          version: version
 
-      - name: Build Collection
+      - name: Build
+        id: build
         run: |
-          make collection.build
+          make build VERBOSE=1
 
-      - name: Create artifact from collection build
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          path: ./manala-path-${{ steps.version.outputs.version }}.tar.gz
-          name: manala-path-${{ steps.version.outputs.version }}
+          path: ./manala-path-${{ steps.metadata.outputs.version }}.tar.gz
+          name: manala-path-${{ steps.metadata.outputs.version }}
           retention-days: 1
 
-      - name: Publish Collection
+      - name: Publish
+        id: publish
         run: |
-          make collection.publish
+          make publish VERBOSE=1
 
-      - name: Get Changelog Entry
+      - name: Get Changelog entry
         id: changelog
         uses: mindsers/changelog-reader-action@v2
         with:
           path: ./CHANGELOG.md
-          version: ${{ steps.version.outputs.version }}
+          version: ${{ steps.metadata.outputs.version }}
 
-      - name: Create Github Release
+      - name: Create GitHub Release
+        id: release
         uses: ncipollo/release-action@v1
         with:
-          name: manala-path ${{ steps.version.outputs.version }}
-          tag: ${{ steps.version.outputs.version }}
+          name: manala-path ${{ steps.metadata.outputs.version }}
+          tag: ${{ steps.metadata.outputs.version }}
           body: ${{ steps.changelog.outputs.changes }}
-          artifacts: ./manala-path-${{ steps.version.outputs.version }}.tar.gz
+          artifacts: ./manala-path-${{ steps.metadata.outputs.version }}.tar.gz
           token: ${{ secrets.GITHUB_TOKEN }}
           skipIfReleaseExists: true
 
-      - name: Notify Slack of job status
+      - name: Notify Slack - Status
         uses: act10ns/slack@v2
         with:
           status: ${{ job.status }}
