@@ -30,10 +30,10 @@ Note that if you install the collection from Ansible Galaxy, it will not be upgr
 ansible-galaxy collection install manala.path --upgrade
 ```
 
-You can also install a specific version of the collection, for example, if you need to downgrade when something is broken in the latest version (please report an issue in this repository). Use the following syntax to install version `1.0.0`:
+You can also install a specific version of the collection, for example, if you need to downgrade when something is broken in the latest version (please report an issue in this repository). Use the following syntax to install version `1.1.0`:
 
 ```shell
-ansible-galaxy collection install manala.path:==1.0.0
+ansible-galaxy collection install manala.path:==1.1.0
 ```
 
 ### Installing the Collection from Github
@@ -48,7 +48,7 @@ In case of unavailability of ansible-galaxy, we host a tar.gz of every version o
     - requirements.yaml:
       ```yaml
       collections:
-        - name: https://github.com/manala/ansible-path/releases/download/$VERSION/manala-roles-$VERSION.tar.gz
+        - name: https://github.com/manala/ansible-path/releases/download/$VERSION/manala-path-$VERSION.tar.gz
           type: url
       ```
 
@@ -68,11 +68,10 @@ Found a bug ? Please open an [issue](https://github.com/manala/ansible-path/issu
 
 You can contact us [here](manala-io.slack.com)
 
-Any kind of contribution is very welcome, you can submit pull requests [here](https://github.com/manala/ansible-roles/pulls)
+Any kind of contribution is very welcome, you can submit pull requests [here](https://github.com/manala/ansible-path/pulls)
 
-This collection uses [molecule](https://github.com/ansible-community/molecule), [ansible-lint](https://github.com/ansible-community/ansible-lint), and `ansible-test` for linting and testing roles.
+This collection uses [ansible-lint](https://github.com/ansible-community/ansible-lint), and `ansible-test` for linting and testing roles.
 
-All of these tools are available through the excellent [ansible-toolset](https://github.com/ansible-community/toolset) docker image.
 
 Open a docker shell
 ```shell
@@ -96,8 +95,8 @@ ansible-test units --python 3.11 tests/unit/plugins/lookup/test_foo.py
 
 This collection is distributed under the MIT license.
 
-See [LICENSE](https://opensource.org/licenses/MIT) to see the full text.
+See [LICENSE](LICENSE) to see the full text.
 
 # Author information
 
-Manala [**(http://www.manala.io/)**](http://www.manala.io)
+Manala [**(https://www.manala.io/)**](https://www.manala.io/)

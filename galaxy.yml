@@ -67,5 +67,5 @@ build_ignore:
   - examples
   - galaxy_token
   - Makefile
-  - manala-path-*
+  - build
   - tests

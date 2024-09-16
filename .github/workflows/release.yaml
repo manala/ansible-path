@@ -12,32 +12,24 @@ jobs:
     if: github.event.head_commit.message == 'Release'
     steps:
 
-      - name: Notify Slack - Starting
-        uses: act10ns/slack@v2
-        with:
-          status: starting
-          channel: '#collection_release'
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set ansible galaxy token
         run: |
-          cat << EOF > ./galaxy_token
+          cat << EOF > galaxy_token
           token: ${{ secrets.ANSIBLE_GALAXY_TOKEN }}
           EOF
 
       - name: Set up system
         uses: ./.manala/github/system/setup
 
-      - name: Get metadata from galaxy.yml
-        id: metadata
-        uses: CumulusDS/get-yaml-paths-action@v1.0.2
-        with:
-          file: galaxy.yml
-          version: version
+      - name: Get version
+        id: version
+        run: |
+          cat << EOF > $GITHUB_OUTPUT
+          version=$(make version)
+          EOF
 
       - name: Build
         id: build
@@ -47,9 +39,8 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          path: ./manala-path-${{ steps.metadata.outputs.version }}.tar.gz
-          name: manala-path-${{ steps.metadata.outputs.version }}
-          retention-days: 1
+          path: build/manala-path-${{ steps.version.outputs.version }}.tar.gz
+          name: manala-path-${{ steps.version.outputs.version }}.tar.gz
 
       - name: Publish
         id: publish
@@ -60,17 +51,17 @@ jobs:
         id: changelog
         uses: mindsers/changelog-reader-action@v2
         with:
-          path: ./CHANGELOG.md
-          version: ${{ steps.metadata.outputs.version }}
+          path: CHANGELOG.md
+          version: ${{ steps.version.outputs.version }}
 
       - name: Create GitHub Release
         id: release
         uses: ncipollo/release-action@v1
         with:
-          name: manala-path ${{ steps.metadata.outputs.version }}
-          tag: ${{ steps.metadata.outputs.version }}
+          name: ${{ steps.version.outputs.version }}
+          tag: ${{ steps.version.outputs.version }}
           body: ${{ steps.changelog.outputs.changes }}
-          artifacts: ./manala-path-${{ steps.metadata.outputs.version }}.tar.gz
+          artifacts: build/manala-path-${{ steps.version.outputs.version }}.tar.gz
           token: ${{ secrets.GITHUB_TOKEN }}
           skipIfReleaseExists: true
 
