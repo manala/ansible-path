@@ -2,6 +2,20 @@
 
 include .manala/Makefile
 
+NAMESPACE = manala
+COLLECTION = path
+VERSION = $(shell yq '.version' galaxy.yml)
+
+###########
+# Version #
+###########
+
+## Version - Get collection version
+version: SHELL := $(MANALA_DOCKER_SHELL)
+version:
+	printf $(VERSION)
+.PHONY: version
+
 ########
 # Lint #
 ########
@@ -18,11 +32,11 @@ lint:
 # Test #
 ########
 
-## Test - Run all tests (but doc and coverage)
+## Test - Run all collection tests (but doc and coverage)
 test: test.sanity test.units test.integration
 .PHONY: test
 
-## Test - Run sanity tests [VERBOSE]
+## Test - Run collection sanity tests [VERBOSE]
 test.sanity: SHELL := $(MANALA_DOCKER_SHELL)
 test.sanity:
 	ansible-test sanity \
@@ -35,7 +49,7 @@ test.sanity:
 		--exclude .manala/
 .PHONY: test.sanity
 
-## Test - Run units tests [VERBOSE|COVERAGE]
+## Test - Run collection units tests [VERBOSE|COVERAGE]
 test.units: SHELL := $(MANALA_DOCKER_SHELL)
 test.units:
 	ansible-test units \
@@ -47,7 +61,7 @@ test.units:
 		--color yes
 .PHONY: test.units
 
-## Test - Run integration tests [VERBOSE|COVERAGE]
+## Test - Run collection integration tests [VERBOSE|COVERAGE]
 test.integration: SHELL := $(MANALA_DOCKER_SHELL)
 test.integration:
 	ansible-test integration \
@@ -59,20 +73,20 @@ test.integration:
 		--color yes
 .PHONY: test.integration
 
-## Test - Run documentation tests [VERBOSE]
+## Test - Run collection documentation tests [VERBOSE]
 test.doc: SHELL := $(MANALA_DOCKER_SHELL)
 test.doc:
 	$(foreach type,module filter, \
-		$(foreach plugin,$(shell ansible-doc --list manala.path --type $(type) | cut -d " " -f 1), \
+		$(foreach plugin,$(shell ansible-doc --list $(NAMESPACE).$(COLLECTION) --type $(type) --json | jq --raw-output 'keys[]'), \
 			ansible-doc \
 				$(if $(VERBOSE), --verbose) \
 				--type $(type) \
-				$(plugin) && \
+				$(plugin) > /dev/null && \
 		) \
 	) true
 .PHONY: test.doc
 
-## Test - Run coverage [VERBOSE]
+## Test - Run collection coverage [VERBOSE]
 test.coverage: SHELL := $(MANALA_DOCKER_SHELL)
 test.coverage:
 	ansible-test coverage xml \
@@ -89,20 +103,19 @@ test.coverage:
 # Build / Publish #
 ###################
 
-COLLECTION = manala-path-*.tar.gz
-
-## Build - Build collection
+## Build - Build collection [VERBOSE]
 build: SHELL := $(MANALA_DOCKER_SHELL)
 build:
-	rm -rfv $(COLLECTION)
 	ansible-galaxy collection build \
-		$(if $(VERBOSE), --verbose) \
-		--force
+		--output-path build \
+		--force \
+		$(if $(VERBOSE), --verbose)
+		
 .PHONY: build
 
-## Collection - Publish collection
+## Publish - Publish collection [VERBOSE]
 publish: SHELL := $(MANALA_DOCKER_SHELL)
 publish:
-	ansible-galaxy collection publish $(COLLECTION) \
+	ansible-galaxy collection publish build/$(NAMESPACE)-$(COLLECTION)-$(VERSION).tar.gz \
 		$(if $(VERBOSE), --verbose)
 .PHONY: publish

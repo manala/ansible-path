@@ -12,6 +12,8 @@ ARG MANALA_GROUP_ID="1000"
 ARG GOSU_VERSION="1.17"
 ARG GOMPLATE_VERSION="4.1.0"
 ARG DIRENV_VERSION="2.34.0"
+ARG JQ_VERSION="1.7.1"
+ARG YQ_VERSION="4.44.3"
 
 # The 'container' environment variable tells systemd that it's running inside a
 # Docker container environment.
@@ -19,7 +21,7 @@ ARG DIRENV_VERSION="2.34.0"
 ENV container="docker"
 
 # Default locale
-ENV LANG C.UTF-8
+ENV LANG="C.UTF-8"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -27,36 +29,45 @@ RUN \
     apt-get --quiet update \
     && apt-get --quiet --yes --purge --autoremove upgrade \
     && apt-get --quiet --yes --no-install-recommends --verbose-versions install \
-        s6 \
-        sudo \
-        curl \
-        ca-certificates \
-        gnupg \
-        libarchive-tools bzip2 \
         bash-completion \
-        rsync \
+        bzip2 \
+        ca-certificates \
+        curl \
         git \
-        make \
+        gnupg \
         less \
-        vim \
+        libarchive-tools \
+        make \
+        rsync \
+        s6 \
         socat \
+        sudo \
+        vim \
     # User
     && addgroup --gid ${MANALA_GROUP_ID} lazy \
     && adduser --home /home/lazy --shell /bin/bash --uid ${MANALA_USER_ID} --gecos lazy --ingroup lazy --disabled-password lazy \
     && install --verbose --mode 0755 --group lazy --owner lazy --directory /run/user/${MANALA_USER_ID} \
     && echo "lazy ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/lazy \
     # Gosu
-    && curl -sSL "https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-$(case $(dpkg --print-architecture) in "amd64") echo "amd64" ;; "arm64") echo "arm64" ;; esac)" \
+    && curl -sSLf "https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-$(case $(dpkg --print-architecture) in "amd64") echo "amd64" ;; "arm64") echo "arm64" ;; esac)" \
         --output /usr/local/bin/gosu \
     && chmod +x /usr/local/bin/gosu \
     # Gomplate
-    && curl -sSL "https://github.com/hairyhenderson/gomplate/releases/download/v${GOMPLATE_VERSION}/gomplate_linux-$(case $(dpkg --print-architecture) in "amd64") echo "amd64" ;; "arm64") echo "arm64" ;; esac)" \
+    && curl -sSLf "https://github.com/hairyhenderson/gomplate/releases/download/v${GOMPLATE_VERSION}/gomplate_linux-$(case $(dpkg --print-architecture) in "amd64") echo "amd64" ;; "arm64") echo "arm64" ;; esac)" \
         --output /usr/local/bin/gomplate \
     && chmod +x /usr/local/bin/gomplate \
     # Direnv
-    && curl -sSL "https://github.com/direnv/direnv/releases/download/v${DIRENV_VERSION}/direnv.linux-$(case $(dpkg --print-architecture) in "amd64") echo "amd64" ;; "arm64") echo "arm64" ;; esac)" \
+    && curl -sSLf "https://github.com/direnv/direnv/releases/download/v${DIRENV_VERSION}/direnv.linux-$(case $(dpkg --print-architecture) in "amd64") echo "amd64" ;; "arm64") echo "arm64" ;; esac)" \
         --output /usr/local/bin/direnv \
     && chmod +x /usr/local/bin/direnv \
+    # Jq
+    && curl -sSLf "https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-linux-$(case $(dpkg --print-architecture) in "amd64") echo "amd64" ;; "arm64") echo "arm64" ;; esac)" \
+        --output /usr/local/bin/jq \
+    && chmod +x /usr/local/bin/jq \
+    # Yq
+    && curl -sSLf "https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_$(case $(dpkg --print-architecture) in "amd64") echo "amd64" ;; "arm64") echo "arm64" ;; esac)" \
+        --output /usr/local/bin/yq \
+    && chmod +x /usr/local/bin/yq \
     # Bash completion
     && install --verbose --mode 0755 --directory /etc/bash_completion.d \
     # Oh My Bash
@@ -75,11 +86,11 @@ RUN \
     apt-get --quiet update \
     && apt-get --quiet --yes --no-install-recommends --verbose-versions install \
         openssh-client \
-        sshpass \
-        python3 \
         pipx \
+        python3 \
         python3-argcomplete \
         shellcheck \
+        sshpass \
     # Sudo
     && echo "Defaults env_keep += \"PIPX_*\"" > /etc/sudoers.d/pipx \
     # Bash completion
